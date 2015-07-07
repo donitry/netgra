@@ -1,6 +1,6 @@
 <?php echo validation_errors(); ?>
 
-<?php echo form_open('account/login'); ?>
+<?php echo form_open('account/login','class="register_form" id="register_form"', array('verification' => $verification)); ?>
 
 <h5>Username</h5>
 <input type="text" name="username" value="" size="50" />

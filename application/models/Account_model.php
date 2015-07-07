@@ -12,8 +12,9 @@ class Account_model extends MR_Model {
      * 返回账号数据
      * @param unknown $user
      */
-    public function checkAccount($user) {
-        return $this->get('api_account',array('user_email'=>$user));
+    public function getAccountInfo($user) {
+        $userInfo = $this->select('api_account',array('user_email'=>$user));
+        return empty($userInfo) ? NULL:(is_array($userInfo)?$userInfo[0]:$userInfo);
     }
     
     /**

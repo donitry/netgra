@@ -22,6 +22,38 @@ class MR_Model extends CI_Model{
         !empty($this->db)?$this->db->close():'';
     }
 
+    private function r_hGet($table, $where)
+    {
+        if (is_array($where) OR is_object($where))
+            $where = serialize($where);
+        $value = $this->cache->hGet($table, $where);
+        if (!empty($value) && $this->cache->sIsMember('_ci_redis_serialized', $where))
+            return unserialize($value);
+        return $value;
+    }
+    
+    private function r_hSet($table, $where, $data){
+        if (is_array($where) OR is_object($where))
+            $where = serialize($where);
+        if (is_array($data) OR is_object($data)){           
+            if ( ! $this->cache->sIsMember('_ci_redis_serialized', $where) 
+                && ! $this->cache->sAdd('_ci_redis_serialized', $where)) {
+                return FALSE;
+            } $data = serialize($data);           
+        } elseif ($this->cache->sIsMember('_ci_redis_serialized', $where)) {
+            $this->cache->sRemove('_ci_redis_serialized', $where);
+        } return $this->cache->hSet($table, $where, $data);
+    }
+    
+    private function r_hDel($table, $where){
+        if (is_array($where) OR is_object($where))
+            $where = serialize($where);
+        if ($this->cache->sIsMember('_ci_redis_serialized', $where))
+            $this->cache->sRemove('_ci_redis_serialized', $where);
+        return $this->cache->hDel($table, $where);
+            
+    }
+    
     /**
      * 获得数据原方法,缓存默认为Redis的hash
      * @param unknown $table 表名
@@ -32,11 +64,11 @@ class MR_Model extends CI_Model{
      */
     public function select($table, $where, $select = '*', $only_db = FALSE) {
         if (empty($table) || empty($where)) return FALSE;
-        $tmpData = $only_db ? 0:$this->cache->hGet($table, $where);
+        $tmpData = $only_db ? 0:$this->r_hGet($table, $where);
         if (empty($tmpData)) {
-            $tmpData = $table->db->select($select)->where($where)->get($table)->result_array();
+            $tmpData = $this->db->select($select)->where($where)->get($table)->result_array();
             if (!empty($tmpData)) {
-                if (!$this->cache->hSet($table, $where, $tmpData))
+                if (!$this->r_hSet($table, $where, $tmpData))
                     log_message('error',"缓存写入失败get!:{$where}-{$table}");
             }
         }return $tmpData;
@@ -62,7 +94,7 @@ class MR_Model extends CI_Model{
     public function update($table, $where, $update) {
         if (empty($table) || empty($where) || empty($update)) return FALSE;
         if ($this->db->where($where)->update($table, $update)) {
-            $this->cache->hDel($table, $where);
+            $this->r_hDel($table, $where);
             return TRUE;
         }else {
             log_message('error',"数据更新失败update!:{$where}-{$table}");
@@ -78,7 +110,7 @@ class MR_Model extends CI_Model{
     public function delete($table, $where) {
         if (empty($table) || empty($where)) return FALSE;
         if ($this->db->where($where)->delete($table)) {
-            $this->cache->hDel($table, $where);
+            $this->r_hDel($table, $where);
             return TRUE;
         }else {
             log_message('error',"数据删除失败update!:{$where}-{$table}");
