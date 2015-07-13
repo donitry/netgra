@@ -62,15 +62,14 @@ class MR_Model extends CI_Model{
      * @param string $only_db 是否直接取数据库数据
      * @return boolean|number 判断方式empty
      */
-    public function select($table, $where, $select = '*', $only_db = FALSE) {
+    public function select($table, $where, $only_db = FALSE, $is_row = FALSE, $select = '*') {
         if (empty($table) || empty($where)) return FALSE;
-        $tmpData = $only_db ? 0:$this->r_hGet($table, $where);
+        $tmpData = $only_db ? 0:$this->r_hGet($table, $where);       
         if (empty($tmpData)) {
-            $tmpData = $this->db->select($select)->where($where)->get($table)->result_array();
-            if (!empty($tmpData)) {
-                if (!$this->r_hSet($table, $where, $tmpData))
-                    log_message('error',"缓存写入失败get!:{$where}-{$table}");
-            }
+            $tmpData = $this->db->select($select)->where($where)->get($table);
+            $tmpData = $is_row?$tmpData->row_array():$tmpData->result_array();           
+            if (!empty($tmpData))
+                $this->r_hSet($table, $where, $tmpData);
         }return $tmpData;
     }    
     
@@ -97,6 +96,7 @@ class MR_Model extends CI_Model{
             $this->r_hDel($table, $where);
             return TRUE;
         }else {
+            $where = json_encode($where);
             log_message('error',"数据更新失败update!:{$where}-{$table}");
         } return FALSE;
     }
@@ -113,6 +113,7 @@ class MR_Model extends CI_Model{
             $this->r_hDel($table, $where);
             return TRUE;
         }else {
+            $where = json_encode($where);
             log_message('error',"数据删除失败update!:{$where}-{$table}");
         } return FALSE;
     }

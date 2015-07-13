@@ -4,7 +4,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * 通行证控制器
  * @author don
- *
+ * 功能：
+ * 1，checkLoginToken 验证用户登陆的真实性
+ * 2，updateUserInfo  登陆成功后，GS需要向GC发送用户的一些基本资料 只发送一次
+ * 3，bannedRole      对指定账号或条件玩家实现封禁功能
  */
 class Account extends MR_Controller {
     public function __construct(){
@@ -16,84 +19,37 @@ class Account extends MR_Controller {
     public function __destruct(){}
     
     public function index(){
-  
-    }
-
-    /**
-     * 检测用户名，不带密码的时候不做验证
-     * @param unknown $user
-     * @param string $pass
-     * @return boolean
-     */
-    private function checkUserName($user, $pass = NULL){
-        $userInfo = $this->Account_model->getAccountInfo($user);
-        if (!empty($userInfo)){
-            if (!empty($pass) && $userInfo['password'] != $pass)            
-                return FALSE;
-            elseif (!empty($pass) && $userInfo['password'] == $pass)
-                $this->session->set_userdata('user',$userInfo);
-             return TRUE;
-        } return FALSE;
+        echo 'hello';
     }
     
     /**
-     * 效验是否是表单来的
-     * @param unknown $verif
-     * @return boolean
+     * 效验用户loginToken
+     * 这步是和UC通讯的部分，获得正确的LoginToken
+     * 因为是内部通讯，外部无从得知
      */
-    private function checkVerification($verif) {
-        if ($this->session->has_userdata('step')
-            && !empty($verif) && ($this->session->userdata('step') == $verif)){
-            return TRUE;
-        }return FALSE;
-    }
-    
-    /**
-     * 显示此时需要的表单(register/login)
-     * @param unknown $form
-     */
-    private function setDisplayForm($form){
-        $data['title'] = $form;
-        $data['verification'] = mt_rand(1000, 10000) . $form;
-        $this->session->set_flashdata('step', $data['verification']);
-        $this->load->view('templete/header', $data);
-        $this->load->view('account/'.$form);
-        $this->load->view('templete/footer');
-    }
-    
-    /**
-     * 登陆处理
-     * 通过step这个session来避免重复性的提交
-     */
-    public function login(){
-        $postParams = $this->input->post();
-        if ($this->form_validation->run() && isset($postParams['verification'])
-            && $this->checkVerification($postParams['verification'])) {
-            if ($this->checkUserName($postParams['username'], $postParams['password']))
-                $this->Account_model->updateAccount($postParams['username'], array('last_time'=>now()));
-            var_dump($this->session->userdata('user'));
-        }else {           
-            $this->setDisplayForm('login');
-        }return FALSE;      
-    }
-    
-    /**
-     * 注册处理
-     */
-    public function register(){      
-        $postParams = $this->input->post();
-        if ($this->form_validation->run() && isset($postParams['verification'])
-            && $this->checkVerification($postParams['verification'])) {
-            $data = array(
-                'user_email' => $postParams['username'],
-                'password'   => $postParams['password'],
-                'phone'      => @$postParams['phone'],
-            ); return $this->checkUserName($postParams['username'])?FALSE:$this->Account_model->createAccount($data);
-        }else { 
-            $this->setDisplayForm('register');
-        }return FALSE;  
+    public function checkLoginToken(){
         
     }
+    
+    /**
+     * 完成效验后，玩家将进入游戏载入流程
+     * GS将玩家最近的一些信息发过来，此处完成入库
+     * 基本数据保存，可用于基本的一些接口查询
+     */
+    public function updateUserInfo(){
+        
+    }
+    
+    /**
+     * 对于正常玩家实现一个封禁的功能
+     * 会将封禁的信息发送到对应的GS，保证封禁情况同步发生
+     * 这里叫封禁角色是留个口，以后同账号对应多个角色时修改此函数解决
+     */
+    public function bannedRole(){
+        
+    }
+    
+
     
     
     
