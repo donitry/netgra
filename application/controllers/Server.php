@@ -60,8 +60,15 @@ class Server extends MR_Controller {
      * 服务器基本状态修改
      * 修改状态会发向游戏服，并让游戏服同步状态
      */
-    public function modifyServer(){
-        
+    private function modifyServer($params){
+        $this->response['code'] = 0;
+        $tmpArr = elements(array('game_key', 'group', 'id_server', 'status'), $params);
+        if (!empty($tmpArr['game_key']) && !empty($tmpArr['group']) 
+            && !empty($tmpArr['id_server']) && !empty($tmpArr['status'])){
+            if ($this->Server_model->updateServerStatus($tmpArr['game_key'], $tmpArr['group'], $tmpArr['id_server'], $tmpArr['status'])){
+                
+            }else $this->lastErr = 'fail!';
+        }return FALSE;
     }
     
     private function getLastError(){
