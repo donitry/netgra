@@ -21,12 +21,13 @@ class TestUtil extends CI_Controller {
     
     function run(){
         print_r('this all right!'); 
-        $this->load->model('Account_model');
-        $this->load->helper(array('form', 'url'));
-        $this->load->library('form_validation');
-        var_dump(form_open('account/register'));
-        $a = '';
-        var_dump(empty($a));die(); 
+        $this->load->model('Server_model');
+        $this->load->helper('oauth');
+        //$a = $this->Server_model->getServerList('xdcvf', 'own');
+        //$a = $this->Server_model->updateServerStatus('xdcvf', 'own', 302011001, 4);
+        $a = getSign(array('a'=>1), '1111');
+        $data = $this->input->raw_input_stream;
+        var_dump($data);show_error('a',301);
         $this->unit->run($this->check());
         echo $this->unit->report();
         echo $this->lastErrMsg;

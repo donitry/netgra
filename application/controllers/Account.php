@@ -12,7 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Account extends MR_Controller {
     public function __construct(){
         parent::__construct();
-        $this->load->helper(array('form', 'url', 'email', 'date'));
+        $this->load->helper(array('form', 'url', 'email', 'date', 'curl'));
         $this->load->library('form_validation');       
         $this->load->model('Account_model');
     }

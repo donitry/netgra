@@ -16,7 +16,7 @@ class Server extends MR_Controller {
     public function __destruct(){}
     
     public function index(){
-        echo 'hello';
+        
     }
     
     /**
