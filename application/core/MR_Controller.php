@@ -2,14 +2,17 @@
 
 /**
  * 扩展Control
+ * 计划仅接受post数据来源
  * @author don
  */
 
 class MR_Controller extends CI_Controller {
-    
-    function __construct() {
+    protected $rParam = array();
+    function __construct($method) {
         parent::__construct ();
-        $this->load->helper('oauth');
+        $this->load->helper('oauth','array');
+        //if (!$this->checkInput($this->input->post())) 
+        //    show_error('sign!',401);
         
     }
     public function __destruct(){}
@@ -38,6 +41,21 @@ class MR_Controller extends CI_Controller {
         if (empty($data) || !is_array($data) || !array_key_exists('sign', $data) 
             || !$this->securityVerify($data)) 
             return FALSE;
-        
+        else {
+            if (array_key_exists('data', $data)){
+                $this->rParam = $data['data'];
+                return TRUE;
+            }
+        } return FALSE;
     }
+    
+    protected function response($response){       
+        $this->output
+             ->set_status_header(200)
+             ->set_content_type('application/json', 'utf-8')
+             ->set_output(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+             ->_display();
+        exit;
+    }
+    
 }

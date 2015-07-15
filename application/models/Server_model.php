@@ -12,7 +12,9 @@ class Server_model extends MR_Model {
         parent::__construct();
         $this->__get('load')->helper('date');
     }
-    public function __destruct(){}
+    public function __destruct(){
+        parent::__destruct();
+    }
     
     /**
      * 获得服务器列表，应该只用于后台控制
