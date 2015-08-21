@@ -63,13 +63,13 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['pdo_driver'] = array(
-	'dsn'	=> 'mysql:host=localhost;dbname=collection',
+	'dsn'	=> 'mysql:host=localhost;dbname=netgra', 
 	'hostname' => 'localhost',
 	'username' => 'netgra',
 	'password' => 'netgra*0399;',
-	'database' => 'collection',
+	'database' => 'netgra',
 	'dbdriver' => 'pdo',
-	'dbprefix' => 'gc_',
+	'dbprefix' => 'ng_',
 	'pconnect' => FALSE,
 	'db_debug' => TRUE,
 	'cache_on' => FALSE,

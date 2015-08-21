@@ -13,8 +13,7 @@ class Account_model extends MR_Model {
      * @param unknown $user
      */
     public function getAccountInfo($user) {
-        $userInfo = $this->select('api_account',array('user_email'=>$user));
-        return empty($userInfo) ? NULL:(is_array($userInfo)?$userInfo[0]:$userInfo);
+        return $this->select('account',array('user_email'=>$user), FALSE, TRUE);
     }
     
     /**
@@ -25,10 +24,9 @@ class Account_model extends MR_Model {
     public function createAccount($userInfo) {
         if (is_array($userInfo) 
             && array_key_exists('user_email', $userInfo) && !empty($userInfo['user_email'])
-            && array_key_exists('password', $userInfo) && !empty($userInfo['password'])) {
-            $userInfo['create_time'] = now();
-            $userInfo['last_time'] = now();
-            return $this->insert('api_account', $userInfo);
+            && array_key_exists('user_password', $userInfo) && !empty($userInfo['user_password'])) {
+            $userInfo['create_time'] = now(); $userInfo['last_time'] = now();
+            return $this->insert('account', $userInfo);
         } return FALSE;
     }
     
@@ -38,7 +36,7 @@ class Account_model extends MR_Model {
      * @param unknown $update
      */
     public function updateAccount($user, $update) {
-        return $this->update('api_account', array('user_email'=>$user), $update);
+        return $this->update('account', array('user_email'=>$user), $update);
     }
     
 }
