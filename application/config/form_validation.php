@@ -6,7 +6,7 @@ $config = array(
         array(
             'field' => 'username',
             'label' => 'Username',
-            'rules' => 'trim|required|min_length[5]|max_length[24]'
+            'rules' => 'trim|required|valid_email|min_length[5]|max_length[24]'
         ),
         array(
             'field' => 'password',
@@ -19,8 +19,8 @@ $config = array(
             'rules' => 'trim|required|min_length[5]|max_length[24]'
         ),
         array(
-            'field' => 'email',
-            'label' => 'Email',
+            'field' => 'phone',
+            'label' => 'Modile Phone',
             'rules' => 'trim|required|min_length[5]|max_length[24]'
         )
     ),
@@ -28,7 +28,7 @@ $config = array(
         array(
             'field' => 'username',
             'label' => 'Username',
-            'rules' => 'trim|required|min_length[5]|max_length[24]'
+            'rules' => 'trim|required|valid_email|min_length[5]|max_length[24]'
         ),
         array(
             'field' => 'password',
